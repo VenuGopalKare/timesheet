@@ -88,7 +88,7 @@ export default function TimeSheet() {
                   {
                     "id": "1oGGADc1e8YFt6UCf-8FQlYbX-0tLszub",
                     "kind": "drive#parentReference",
-                    "isRoot": false
+                    "isRoot": true
                   }
                 ]
               })
