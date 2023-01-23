@@ -73,6 +73,29 @@ export default function TimeSheet() {
             console.log(val.sheets[0].properties.sheetId)
             const SheetId = val.sheets[0].properties.sheetId
 
+            const spreadsheetUrl = val.spreadsheetUrl
+            
+            fetch(`https://www.googleapis.com/drive/v2/files/${Id}?key=AIzaSyAzmN7JJ7W5D3jfypgnjZkw_d-CB6thpW0`,
+            {
+              method:"PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+              body:JSON.stringify({
+                "parents": [
+                  {
+                    "id": "1oGGADc1e8YFt6UCf-8FQlYbX-0tLszub",
+                    "kind": "drive#parentReference",
+                    "isRoot": false
+                  }
+                ]
+              })
+
+            }).then((res)=>{
+              console.log(res)
+            })
           
            
 
@@ -790,7 +813,7 @@ export default function TimeSheet() {
             }).then((res) => {
               const emailId = [
                 "govardhansiddhu555@gmail.com",
-                "venula444@gmail.com","gsurada@msystechnologies.com","ashraful.nobi@msystechnologies.com"
+                "venula444@gmail.com","gsurada@msystechnologies.com"
               ];
               emailId.map((id) =>
                 fetch(
@@ -807,34 +830,12 @@ export default function TimeSheet() {
                       type: "user",
                       kind: "drive#permission",
                       value: id,
-                      // "title": "sub",
-                      // "parents": [{"id":"https://drive.google.com/drive/folders/1oGGADc1e8YFt6UCf-8FQlYbX-0tLszub?usp=share_link"}],
-                      // "mimeType": "application/vnd.google-apps.folder"
+                      
                     }),
                   }
                 ).then((res)=>{
-                  // console.log(res)
-                  // const file = new Blob([Id], { type: 'text/plain' });
-
-                  // const formData = new FormData();
-                  // formData.append('file', file);
-                  // formData.append('mimeType', 'text/plain');
-                  // formData.append('name', 'file_name.txt');
-                  // formData.append('parents', ['https://drive.google.com/drive/folders/1oGGADc1e8YFt6UCf-8FQlYbX-0tLszub?usp=share_link']);
-
-                  // fetch('https://www.googleapis.com/upload/drive/v3/files',{
-                  //   method:"POST",
-                  //   headers:{
-                  //     'Content-Type': 'multipart/form-data',
-                  //     Accept: "application/json",
-                  //     Authorization: `Bearer ${accessToken}`,
-                  //   },
-                  //   body:JSON.stringify({
-                     
-                     
-                  //     formData
-                  //   })
-                  // })
+                  console.log(res)
+                  
                 })
               );
             })
