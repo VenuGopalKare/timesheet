@@ -1,12 +1,16 @@
 // import { useRouter } from 'next/router';
-import { useEffect, useState,useRef } from 'react'
+import { useEffect, useState} from 'react'
 import jwt_decode from 'jwt-decode'
-// import { gapi } from 'gapi-script';
-// import { GoogleAuth } from 'google-auth-library';
-// const {GoogleAuth} = require('google-auth-library');
-// import { google } from 'googleapis'
+import DropdownButton from './DropdownButton';
+import sourcedata from '../sourcedata.json'
+
 const CLIENT_ID = "543046022995-l6bsm3dead1il1g2mja6rtu92ap33bm3.apps.googleusercontent.com";
 const SCOPES = "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file"
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 
 
 export default function TimeSheet() {
@@ -16,6 +20,13 @@ export default function TimeSheet() {
   const [access, setAccess] = useState('')
   const [data, setData] = useState('')
   const [titlename,setTitlename] = useState('venuSheet')
+
+ 
+
+  const [value,setValue] = useState('')
+
+  
+
   
 
  
@@ -43,6 +54,8 @@ export default function TimeSheet() {
 
   }
 
+
+
   useEffect(() => {
     const google = window.google
     google.accounts.id.initialize({
@@ -55,8 +68,15 @@ export default function TimeSheet() {
       { theme: "outline", size: 'large' }
     );
 
-    
-      
+    const currentDate = new Date()
+    const currentMonth = currentDate.getMonth();
+    const currentMonthName = monthNames[currentMonth];
+    const currentYear = currentDate.getFullYear();
+
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+    console.log(currentMonthName,currentYear)
+
     setTokenClient(
       google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
@@ -65,13 +85,17 @@ export default function TimeSheet() {
           // console.log(tokenResponse.access_token);
           const accessToken = tokenResponse.access_token
           console.log(titlename)
+          console.log(accessToken)
           setAccess(accessToken)
+          localStorage.setItem('accesstoken',accessToken)
+
           const sheetData = {
-            'properties': { 'title': `${titlename}` },
-            'sheets': [{ 'properties': { 'title': 'syed' } },
-            { 'properties': { 'title': 'venu' } },
+            'properties': { 'title': `TimeSheet_${value}_${currentMonthName}_${currentYear}`},
+            'sheets': [{ 'properties': { 'title': 'venu' } },
+            { 'properties': { 'title': 'gopal' } },
             { 'properties': { 'title': 'govs' } }]
           }
+
           fetch('https://sheets.googleapis.com/v4/spreadsheets', {
             method: "POST",
             headers: new Headers({ 'Authorization': 'Bearer ' + accessToken }),
@@ -164,10 +188,21 @@ export default function TimeSheet() {
                       values: [["From"], ["To"], ["Billing Start date"], ["Contact No.*"]],
                     },
                     {
+                      range:"venu!G3",
+                      majorDimension: "DIMENSION_UNSPECIFIED",
+                      values:[[currentMonthName.slice(0,3) +" " +currentYear]]
+
+                    },
+                    {
+                      range:'venu!G4',
+                      majorDimension: "DIMENSION_UNSPECIFIED",
+                      values:[["Days"+" "+daysInMonth]]
+                    },
+                    {
                       range: "venu!B7",
                       majorDimension: "DIMENSION_UNSPECIFIED",
                       values: [
-                        ["Date"], ["1-Oct-22"], ["2-Oct-22"], ["3-Oct-22"], ["4-Oct-22"], ["5-Oct-22"], ["6-Oct-22"], ["7-Oct-22"], ["8-Oct-22"], ["9-Oct-22"], ["10-Oct-22"], ["11-Oct-22"], ["12-Oct-22"], ["13-Oct-22"], ["14-Oct-22"], ["15-Oct-22"], ["16-Oct-22"], ["17-Oct-22"], ["18-Oct-22"]
+                        ["Date"], ["2-Feb-23"], ["2-Oct-22"], ["3-Oct-22"], ["4-Oct-22"], ["5-Oct-22"], ["6-Oct-22"], ["7-Oct-22"], ["8-Oct-22"], ["9-Oct-22"], ["10-Oct-22"], ["11-Oct-22"], ["12-Oct-22"], ["13-Oct-22"], ["14-Oct-22"], ["15-Oct-22"], ["16-Oct-22"], ["17-Oct-22"], ["18-Oct-22"]
                         , ["19-Oct-22"], ["20-Oct-22"], ["21-Oct-22"], ["22-Oct-22"], ["23-Oct-22"], ["24-Oct-22"], ["25-Oct-22"], ["26-Oct-22"]
                         , ["27-Oct-22"], ["28-Oct-22"], ["29-Oct-22"], ["30-Oct-22"], ["31-Oct-22"], ["Working Days*"]]
 
@@ -740,7 +775,7 @@ export default function TimeSheet() {
     )
 
 
-  }, [titlename])
+  }, [value])
 
   // console.log(access)
   console.log(titlename)
@@ -769,22 +804,30 @@ export default function TimeSheet() {
   }
 
   // console.log(data)
+  console.log(value)
+  console.log(sourcedata)
+ 
 
   return (
     <>
-      <div>
-        <div id="signInDiv"></div>
-        {Object.keys(user).length != 0 && <button onClick={(e) => handleSignOut(e)}>Sign Out</button>}
+      <div className='text-center'>
+        <div onClick={createDriveFile}  id="signInDiv"></div>
 
-        {user && <div>
-          <img src={user.picture}></img>
+        {user && <div className='d-flex flex-column justify-content-center'>
+          <div> <img src={user.picture}></img>
           <h3>{user.name}</h3>
-          <input type='submit' className='m-2' onClick={createDriveFile} value="Create File" />
-          <input type="text" onChange={(e)=>setTitlename(e.target.value)} /><br/>
-          
-         
+          </div>
+          </div>}
 
-        </div>}
+
+        {Object.keys(user).length != 0 && <div>  
+          <button onClick={(e) => handleSignOut(e)}>Sign Out</button>  
+          <input type='submit' className='m-2' onClick={createDriveFile} value="Create File" />
+          </div>
+          }
+
+        
+
         <div className='pt-4 m-2'>
           <button onClick={getFiles}>GetFiles</button>
         </div>
@@ -826,6 +869,14 @@ export default function TimeSheet() {
             })
           }
         </div>
+        <div>
+      {/* <p>Current month: {currentMonthName}</p>
+      <p>Current year: {currentYear}</p> */}
+    </div>
+    
+    <div>
+      <DropdownButton value={value} setValue={setValue}/>
+    </div>
 
 
       </div>

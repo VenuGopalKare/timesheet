@@ -1,0 +1,57 @@
+[
+  { 
+      "AXS":[
+          {
+              "EmpID": "1561",
+              "Name": "Tamilselvan P",
+              "Designation": "Senior Software Engineer",
+              "Location": "Chennai",
+              "Billing Start date": "23-Sep-2021",
+              "Contact": "9876543210"
+          },
+          {
+              "EmpID": "1562",
+              "Name": "Tamilselvan P",
+              "Designation": "Senior Software Engineer",
+              "Location": "Chennai",
+              "Billing Start date": "23-Sep-2021",
+              "Contact": "9876543210"
+          },
+          {
+              "EmpID": "1563",
+              "Name": "Tamilselvan P",
+              "Designation": "Senior Software Engineer",
+              "Location": "Chennai",
+              "Billing Start date": "23-Sep-2021",
+              "Contact": "9876543210"
+          }
+      ],
+      "Emami":[
+          {
+              "EmpID": "1564",
+              "Name": "Tamilselvan P",
+              "Designation": "Senior Software Engineer",
+              "Location": "Chennai",
+              "Billing Start date": "23-Sep-2021",
+              "Contact": "9876543210"
+          },
+          {
+              "EmpID": "1565",
+              "Name": "Tamilselvan P",
+              "Designation": "Senior Software Engineer",
+              "Location": "Chennai",
+              "Billing Start date": "23-Sep-2021",
+              "Contact": "9876543210"
+          },
+          {
+              "EmpID": "1566",
+              "Name": "Tamilselvan P",
+              "Designation": "Senior Software Engineer",
+              "Location": "Chennai",
+              "Billing Start date": "23-Sep-2021",
+              "Contact": "9876543210"
+          }
+      ]
+
+  }
+]
