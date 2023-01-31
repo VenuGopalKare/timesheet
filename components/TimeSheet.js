@@ -302,6 +302,41 @@ export default function TimeSheet() {
                         {
                           range: `${item.Name}!D7`,
                           majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [
+                            ["Working hr"],
+                            ["0.00"],
+                            ["0.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["0.00"],
+                            ["0.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["0.00"],
+                            ["0.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["0.00"],
+                            ["0.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["8.00"],
+                            ["0.00"],
+                            ["0.00"],
+                            ["8.00"],
+                            ["Official Leaves(Including Sat/Sun)*"],
+                          ],
                         },
                         {
                           range: `${item.Name}!G7`,
@@ -1033,8 +1068,8 @@ export default function TimeSheet() {
   // console.log(sourcedata)
 
   return (
-    <>
-      <div className="text-center">
+    <center>
+      <div className="">
         <div onClick={createDriveFile} id="signInDiv"></div>
 
         {user && (
@@ -1063,9 +1098,9 @@ export default function TimeSheet() {
                 setSheetDetails={setSheetDetails}
               />
             </div>
-            <div className="pt-4 m-2">
+            {/* <div className="pt-4 m-2">
               <button onClick={getFiles}>GetFiles</button>
-            </div>
+            </div> */}
           </div>
         )}
 
@@ -1097,6 +1132,6 @@ export default function TimeSheet() {
       <p>Current year: {currentYear}</p> */}
         </div>
       </div>
-    </>
+    </center>
   );
 }
