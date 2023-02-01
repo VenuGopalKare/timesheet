@@ -35,6 +35,7 @@ export default function TimeSheet() {
   const [dates, setDates] = useState("");
 
   const [value, setValue] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
   function handleCallbackResponse(response) {
     var userObject = jwt_decode(response.credential);
@@ -49,8 +50,8 @@ export default function TimeSheet() {
   }
 
   function createDriveFile(e) {
+    setShowForm(true);
     e.preventDefault();
-
     tokenClient.requestAccessToken();
   }
 
@@ -93,6 +94,23 @@ export default function TimeSheet() {
     "Saturday",
   ];
 
+  const submitHandler = (e) => {
+    e.preventDefault();
+    let oldSheetData = [...sheetDetails];
+    let newData = {
+      EmpID: e.target.EmpID.value,
+      Name: e.target.Name.value,
+      Designation: e.target.Designation.value,
+      Location: e.target.Location.value,
+      BillingStartDate: e.target.BillingStartDate.value,
+      Contact: e.target.Contact.value,
+      Company: e.target.Company.value,
+      Client: e.target.Client.value,
+    };
+    oldSheetData.push(newData);
+    setSheetDetails(oldSheetData);
+  };
+  console.log("sheet details:", sheetDetails);
   useEffect(() => {
     const google = window.google;
     google.accounts.id.initialize({
@@ -110,9 +128,9 @@ export default function TimeSheet() {
     const currentMonthName = monthNames[currentMonth];
     const currentYear = currentDate.getFullYear();
 
-    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-
-    console.log(currentMonthName, currentYear);
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    console.log(daysInMonth);
+    // console.log(currentMonthName, currentYear);
 
     setTokenClient(
       google.accounts.oauth2.initTokenClient({
@@ -139,6 +157,18 @@ export default function TimeSheet() {
             })),
           };
 
+          const workingDays = getAllDaysInMonth(
+            now.getFullYear(),
+            now.getMonth()
+          ).reduce((count, item) => {
+            const date = new Date(item);
+            const presentDays = `${String(days[date.getDay()]).slice(0, 3)}`;
+            if (presentDays !== "Sat" && presentDays !== "Sun") {
+              count++;
+            }
+            return count;
+          }, 0);
+
           fetch("https://sheets.googleapis.com/v4/spreadsheets", {
             method: "POST",
             headers: new Headers({ Authorization: "Bearer " + accessToken }),
@@ -157,7 +187,7 @@ export default function TimeSheet() {
               // console.log(accessToken)
               // console.log(val.sheets[0].properties.sheetId)
               const SheetId = val.sheets[0].properties.sheetId;
-              console.log(val.sheets);
+              // console.log(val.sheets);
 
               const spreadsheetUrl = val.spreadsheetUrl;
 
@@ -249,17 +279,43 @@ export default function TimeSheet() {
                           majorDimension: "ROWS",
                           values: [
                             [currentMonthName.slice(0, 3) + " " + currentYear],
-                            ["Days" + " " + daysInMonth],
-                            [item.EmpID],
-                            [item.Location],
                           ],
+                        },
+                        {
+                          range: `${item.Name}!G4`,
+                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [["Days" + " " + daysInMonth]],
+                        },
+                        {
+                          range: `${item.Name}!G5`,
+                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [[item.EmpID]],
+                        },
+                        {
+                          range: `${item.Name}!G6`,
+                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [[item.Location]],
                         },
                         {
                           range: `${item.Name}!I5`,
                           majorDimension: "ROWS",
                           values: [[item.BillingStartDate], [item.Contact]],
                         },
-
+                        {
+                          range: `${item.Name}!B39`,
+                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [["Working Days*"]],
+                        },
+                        {
+                          range: `${item.Name}!C39`,
+                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [["Personal Leave*"]],
+                        },
+                        {
+                          range: `${item.Name}!D39`,
+                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [["Official Leaves(Including Sat/Sun)*"]],
+                        },
                         {
                           range: `${item.Name}!B7`,
                           majorDimension: "DIMENSION_UNSPECIFIED",
@@ -276,9 +332,9 @@ export default function TimeSheet() {
                                 }-${String(currentDate.getYear()).slice(1)}`,
                               ];
                             }),
-                            ["Working Days*"],
                           ],
                         },
+
                         {
                           range: `${item.Name}!C7`,
                           majorDimension: "DIMENSION_UNSPECIFIED",
@@ -296,7 +352,6 @@ export default function TimeSheet() {
 
                               return [presentDays];
                             }),
-                            ["Personal Leave*"],
                           ],
                         },
                         {
@@ -304,38 +359,21 @@ export default function TimeSheet() {
                           majorDimension: "DIMENSION_UNSPECIFIED",
                           values: [
                             ["Working hr"],
-                            ["0.00"],
-                            ["0.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["0.00"],
-                            ["0.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["0.00"],
-                            ["0.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["0.00"],
-                            ["0.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["8.00"],
-                            ["0.00"],
-                            ["0.00"],
-                            ["8.00"],
-                            ["Official Leaves(Including Sat/Sun)*"],
+                            ...getAllDaysInMonth(
+                              now.getFullYear(),
+                              now.getMonth()
+                            ).map((item) => {
+                              const date = new Date(item);
+                              const presentDays = `${String(
+                                days[date.getDay()]
+                              ).slice(0, 3)}`;
+                              console.log(presentDays);
+
+                              return presentDays === "Sun" ||
+                                presentDays === "Sat"
+                                ? ["0.00"]
+                                : ["8.00"];
+                            }),
                           ],
                         },
                         {
@@ -367,6 +405,11 @@ export default function TimeSheet() {
                           range: `${item.Name}!F41`,
                           majorDimension: "ROWS",
                           values: [["Date*"]],
+                        },
+                        {
+                          range: `${item.Name}!B40`,
+                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          values: [[workingDays]],
                         },
                       ],
                     }),
@@ -1039,7 +1082,7 @@ export default function TimeSheet() {
   }, [value]);
 
   // console.log(access)
-  console.log(titlename);
+  // console.log(titlename);
 
   const folderId = "1EzRwbtx4FI4PAK6_vAoBa_V11IgqPck-";
   const getFiles = async () => {
@@ -1067,10 +1110,16 @@ export default function TimeSheet() {
   // console.log(value)
   // console.log(sourcedata)
 
+  console.log("/////", showForm);
+
   return (
-    <center>
-      <div className="">
-        <div onClick={createDriveFile} id="signInDiv"></div>
+    <>
+      <div className="mt-5 p-5 text-center">
+        <div
+          className="text-center"
+          onClick={(e) => createDriveFile(e)}
+          id="signInDiv"
+        ></div>
 
         {user && (
           <div className="d-flex flex-column justify-content-center">
@@ -1091,6 +1140,11 @@ export default function TimeSheet() {
               onClick={createDriveFile}
               value="Create File"
             />
+
+            {/* <div className="pt-4 m-2">
+              <button onClick={getFiles}>GetFiles</button>
+            </div> */}
+
             <div>
               <DropdownButton
                 value={value}
@@ -1098,9 +1152,46 @@ export default function TimeSheet() {
                 setSheetDetails={setSheetDetails}
               />
             </div>
-            {/* <div className="pt-4 m-2">
-              <button onClick={getFiles}>GetFiles</button>
-            </div> */}
+            <form onSubmit={(e) => submitHandler(e)} className="form">
+              <label className="form-label"> Enter an EmpID </label>
+              <input
+                name="EmpID"
+                className="form-input"
+                type="number"
+                placeholder="Enter EmpID"
+              />
+              <br />
+              <label> Enter Name </label>
+              <input name="Name" type="text" placeholder="Enter Name" />
+              <br />
+              <label> Enter Designation </label>
+              <input
+                name="Designation"
+                type="text"
+                placeholder="Enter Designation"
+              />
+              <br />
+              <label> Enter Location </label>
+              <input name="Location" type="text" placeholder="Enter Location" />
+              <br />
+              <label> Enter BillingStartDate </label>
+              <input
+                name="BillingStartDate"
+                type="date"
+                placeholder="Enter BillingStartDate"
+              />
+              <br />
+              <label> Enter Contact </label>
+              <input name="Contact" type="number" placeholder="Enter Contact" />
+              <br />
+              <label> Enter Company </label>
+              <input name="Company" type="text" placeholder="Enter Company" />
+              <br />
+              <label> Enter Client </label>
+              <input name="Client" type="text" placeholder="Enter Client" />
+              <br />
+              <button type="submit">Add Details</button>
+            </form>
           </div>
         )}
 
@@ -1132,6 +1223,6 @@ export default function TimeSheet() {
       <p>Current year: {currentYear}</p> */}
         </div>
       </div>
-    </center>
+    </>
   );
 }
