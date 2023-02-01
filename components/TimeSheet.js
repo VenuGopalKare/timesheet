@@ -149,7 +149,19 @@ export default function TimeSheet() {
     const currentYear = currentDate.getFullYear();
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    console.log(daysInMonth);
+    // console.log(daysInMonth);
+    const datesInMonth = [
+      ...getAllDaysInMonth(now.getFullYear(), now.getMonth()).map((item) => {
+        const currentDate = new Date(item);
+        return `${currentDate.getDate()}-${
+          months[currentDate.getMonth()]
+        }-${String(currentDate.getYear()).slice(1)}`;
+      }),
+    ];
+    console.log(datesInMonth);
+    const startDate = datesInMonth.slice(0, 1);
+    const endDate = datesInMonth.slice(-1);
+
     // console.log(currentMonthName, currentYear);
 
     setTokenClient(
@@ -317,25 +329,16 @@ export default function TimeSheet() {
                           values: [[item.Location]],
                         },
                         {
-                          range: `${item.Name}!I5`,
+                          range: `${item.Name}!I3`,
                           majorDimension: "ROWS",
-                          values: [[item.BillingStartDate], [item.Contact]],
+                          values: [
+                            startDate,
+                            endDate,
+                            [item.BillingStartDate],
+                            [item.Contact],
+                          ],
                         },
-                        {
-                          range: `${item.Name}!B39`,
-                          majorDimension: "DIMENSION_UNSPECIFIED",
-                          values: [["Working Days*"]],
-                        },
-                        {
-                          range: `${item.Name}!C39`,
-                          majorDimension: "DIMENSION_UNSPECIFIED",
-                          values: [["Personal Leave*"]],
-                        },
-                        {
-                          range: `${item.Name}!D39`,
-                          majorDimension: "DIMENSION_UNSPECIFIED",
-                          values: [["Official Leaves(Including Sat/Sun)*"]],
-                        },
+
                         {
                           range: `${item.Name}!B7`,
                           majorDimension: "DIMENSION_UNSPECIFIED",
@@ -396,37 +399,35 @@ export default function TimeSheet() {
                           ],
                         },
                         {
-                          range: `${item.Name}!G7`,
-                          majorDimension: "DIMENSION_UNSPECIFIED",
+                          range: `${item.Name}!E7`,
+                          majorDimension: "ROWS",
                           values: [["Description"]],
                         },
                         {
-                          range: `${item.Name}!E39`,
-                          majorDimension: "ROWS",
-                          values: [["Days Present*"]],
+                          range: `${item.Name}!B${8 + daysInMonth}`,
+                          majorDimension: "COLUMNS",
+                          values: [
+                            ["Working Days*"],
+                            ["Personal Leave*"],
+                            ["Official Leaves(Including Sat/Sun)*"],
+                            ["Days Present*"],
+                            ["Extra / Comp-off(On Official Leaves)*"],
+                            ["Total Days"],
+                          ],
                         },
+
                         {
-                          range: `${item.Name}!F39`,
-                          majorDimension: "ROWS",
-                          values: [["Extra / Comp-off(On Official Leaves)*"]],
-                        },
-                        {
-                          range: `${item.Name}!H39`,
-                          majorDimension: "ROWS",
-                          values: [["Total Days"]],
-                        },
-                        {
-                          range: `${item.Name}!B41`,
+                          range: `${item.Name}!B${10 + daysInMonth}`,
                           majorDimension: "ROWS",
                           values: [["Prepared By*"]],
                         },
                         {
-                          range: `${item.Name}!F41`,
+                          range: `${item.Name}!F${10 + daysInMonth}`,
                           majorDimension: "ROWS",
                           values: [["Date*"]],
                         },
                         {
-                          range: `${item.Name}!B40`,
+                          range: `${item.Name}!B${9 + daysInMonth}`,
                           majorDimension: "DIMENSION_UNSPECIFIED",
                           values: [[workingDays]],
                         },
@@ -466,7 +467,7 @@ export default function TimeSheet() {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
                               startRowIndex: 6,
-                              endRowIndex: 38,
+                              endRowIndex: 7 + daysInMonth,
                               startColumnIndex: 4,
                               endColumnIndex: 9,
                             },
@@ -489,8 +490,8 @@ export default function TimeSheet() {
                           mergeCells: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 38,
-                              endRowIndex: 41,
+                              startRowIndex: 7 + daysInMonth,
+                              endRowIndex: 10 + daysInMonth,
                               startColumnIndex: 6,
                               endColumnIndex: 9,
                             },
@@ -501,8 +502,8 @@ export default function TimeSheet() {
                           mergeCells: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 40,
-                              endRowIndex: 41,
+                              startRowIndex: 9 + daysInMonth,
+                              endRowIndex: 10 + daysInMonth,
                               startColumnIndex: 1,
                               endColumnIndex: 3,
                             },
@@ -513,8 +514,8 @@ export default function TimeSheet() {
                           mergeCells: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 40,
-                              endRowIndex: 41,
+                              startRowIndex: 9 + daysInMonth,
+                              endRowIndex: 10 + daysInMonth,
                               startColumnIndex: 3,
                               endColumnIndex: 5,
                             },
@@ -772,7 +773,7 @@ export default function TimeSheet() {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
                               startRowIndex: 7,
-                              endRowIndex: 38,
+                              endRowIndex: 7 + daysInMonth,
                               startColumnIndex: 1,
                               endColumnIndex: 3,
                             },
@@ -806,7 +807,7 @@ export default function TimeSheet() {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
                               startRowIndex: 7,
-                              endRowIndex: 38,
+                              endRowIndex: 7 + daysInMonth,
                               startColumnIndex: 3,
                               endColumnIndex: 4,
                             },
@@ -839,8 +840,8 @@ export default function TimeSheet() {
                           repeatCell: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 38,
-                              endRowIndex: 39,
+                              startRowIndex: 7 + daysInMonth,
+                              endRowIndex: 8 + daysInMonth,
                               startColumnIndex: 1,
                               endColumnIndex: 9,
                             },
@@ -872,8 +873,8 @@ export default function TimeSheet() {
                           repeatCell: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 39,
-                              endRowIndex: 40,
+                              startRowIndex: 8 + daysInMonth,
+                              endRowIndex: 9 + daysInMonth,
                               startColumnIndex: 1,
                               endColumnIndex: 9,
                             },
@@ -905,8 +906,8 @@ export default function TimeSheet() {
                           repeatCell: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 40,
-                              endRowIndex: 41,
+                              startRowIndex: 9 + daysInMonth,
+                              endRowIndex: 10 + daysInMonth,
                               startColumnIndex: 1,
                               endColumnIndex: 3,
                             },
@@ -938,8 +939,8 @@ export default function TimeSheet() {
                           repeatCell: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 40,
-                              endRowIndex: 41,
+                              startRowIndex: 9 + daysInMonth,
+                              endRowIndex: 10 + daysInMonth,
                               startColumnIndex: 3,
                               endColumnIndex: 5,
                             },
@@ -971,8 +972,8 @@ export default function TimeSheet() {
                           repeatCell: {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
-                              startRowIndex: 40,
-                              endRowIndex: 41,
+                              startRowIndex: 9 + daysInMonth,
+                              endRowIndex: 10 + daysInMonth,
                               startColumnIndex: 5,
                               endColumnIndex: 6,
                             },
@@ -1012,7 +1013,7 @@ export default function TimeSheet() {
                             range: {
                               sheetId: `${item.properties.sheetId}`,
                               startRowIndex: 1,
-                              endRowIndex: 41,
+                              endRowIndex: 10 + daysInMonth,
                               startColumnIndex: 1,
                               endColumnIndex: 9,
                             },
@@ -1063,11 +1064,7 @@ export default function TimeSheet() {
                 );
               });
 
-              const emailId = [
-                "govardhansiddhu555@gmail.com",
-                "venula444@gmail.com",
-                "afwaan3@gmail.com",
-              ];
+              const emailId = ["govardhansiddhu555@gmail.com"];
               emailId.map((id) =>
                 fetch(
                   `https://www.googleapis.com/drive/v2/files/${Id}/permissions?key=AIzaSyAzmN7JJ7W5D3jfypgnjZkw_d-CB6thpW0`,
