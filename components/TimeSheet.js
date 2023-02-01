@@ -33,9 +33,18 @@ export default function TimeSheet() {
 
   const [sheetDetails, setSheetDetails] = useState("");
   const [dates, setDates] = useState("");
+  const [biodata, setBiodata] = useState([]);
 
   const [value, setValue] = useState("");
   const [showForm, setShowForm] = useState(false);
+
+  const fetchDetails = async () => {
+    const response = await fetch("/api/details");
+    const bio = await response.json();
+    setBiodata(bio);
+  };
+
+  console.log(biodata);
 
   function handleCallbackResponse(response) {
     var userObject = jwt_decode(response.credential);
@@ -109,8 +118,18 @@ export default function TimeSheet() {
     };
     oldSheetData.push(newData);
     setSheetDetails(oldSheetData);
+    alert("Details added succesfully");
+    e.target.EmpID.value = "";
+    e.target.Name.value = "";
+    e.target.Designation.value = "";
+    e.target.Location.value = "";
+    e.target.BillingStartDate.value = "";
+    e.target.Contact.value = "";
+    e.target.Company.value = "";
+    e.target.Client.value = "";
   };
   console.log("sheet details:", sheetDetails);
+
   useEffect(() => {
     const google = window.google;
     google.accounts.id.initialize({
@@ -123,6 +142,7 @@ export default function TimeSheet() {
       size: "large",
     });
 
+    fetchDetails();
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentMonthName = monthNames[currentMonth];
@@ -348,7 +368,6 @@ export default function TimeSheet() {
                               const presentDays = `${String(
                                 days[date.getDay()]
                               ).slice(0, 3)}`;
-                              console.log(presentDays);
 
                               return [presentDays];
                             }),
@@ -367,7 +386,7 @@ export default function TimeSheet() {
                               const presentDays = `${String(
                                 days[date.getDay()]
                               ).slice(0, 3)}`;
-                              console.log(presentDays);
+                              // console.log(presentDays);
 
                               return presentDays === "Sun" ||
                                 presentDays === "Sat"
@@ -1047,6 +1066,7 @@ export default function TimeSheet() {
               const emailId = [
                 "govardhansiddhu555@gmail.com",
                 "venula444@gmail.com",
+                "afwaan3@gmail.com",
               ];
               emailId.map((id) =>
                 fetch(
@@ -1079,7 +1099,7 @@ export default function TimeSheet() {
         },
       })
     );
-  }, [value]);
+  }, [value, sheetDetails]);
 
   // console.log(access)
   // console.log(titlename);
