@@ -432,6 +432,7 @@ export default function TimeSheet() {
                           values: [[workingDays]],
                         },
                       ],
+                      
                     }),
                   }
                 );
@@ -450,6 +451,35 @@ export default function TimeSheet() {
                     },
                     body: JSON.stringify({
                       requests: [
+                        {
+                          "updateDimensionProperties": {
+                            "range": {
+                              "dimension": "COLUMNS",
+                              "sheetId": `${item.properties.sheetId}`,
+                              "startIndex": 3,
+                              "endIndex": 4
+                            },
+                            "properties": {
+                              "pixelSize": 180
+                            },
+                            "fields": "pixelSize"
+                          }
+                        },
+                        {
+                          "updateDimensionProperties": {
+                            "range": {
+                              "dimension": "COLUMNS",
+                              "sheetId": `${item.properties.sheetId}`,
+                              "startIndex": 5,
+                              "endIndex": 6
+                            },
+                            "properties": {
+                              "pixelSize": 190
+                            },
+                            "fields": "pixelSize"
+                          }
+                        },
+                      
                         {
                           mergeCells: {
                             range: {
@@ -555,6 +585,7 @@ export default function TimeSheet() {
                               "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)",
                           },
                         },
+                     
                         {
                           repeatCell: {
                             range: {
@@ -1000,7 +1031,10 @@ export default function TimeSheet() {
                             fields:
                               "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)",
                           },
+                          
+                          
                         },
+                       
                         {
                           appendDimension: {
                             sheetId: `${item.properties.sheetId}`,
