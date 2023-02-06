@@ -1,2 +1,5 @@
-
-[    {        "id": 1,        "label": "AXS",        "value": "AXS"    },    {        "id": 2,        "label": "Emami",        "value": "Emami"    },    {        "id": 3,        "label": "HeartFullness",        "value": "HeartFullness"    }]
+[
+  { "id": 1, "label": "AXS", "value": "AXS" },
+  { "id": 2, "label": "Emami", "value": "Emami" },
+  { "id": 3, "label": "HeartFullness", "value": "HeartFullness" }
+]

@@ -5,7 +5,7 @@ import sourcedata from "../sourcedata.json";
 function DropdownButton({ value, setValue, setSheetDetails }) {
   const options = projectname.map((item) => {
     return (
-      <option key={item.id} value={item.value}>
+      <option className="dropdown-item" key={item.id} value={item.value}>
         {item.label}
       </option>
     );
@@ -15,7 +15,7 @@ function DropdownButton({ value, setValue, setSheetDetails }) {
     setValue(event.target.value);
     setSheetDetails(
       Object.entries(sourcedata[0]).find(
-        (item) => item[0] === event.target.value
+        (item) => item[0] === event.target?.value
       )[1]
     );
   }
@@ -23,7 +23,7 @@ function DropdownButton({ value, setValue, setSheetDetails }) {
   return (
     <div>
       <select value={value} onChange={handleChange}>
-        <option> Select Project</option>
+        <option selected> Select Project </option>
         {options}
       </select>
     </div>

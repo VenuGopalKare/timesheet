@@ -1,12 +1,21 @@
-import React from 'react'
-import TimeSheet from '../components/TimeSheet'
+import React from "react";
+import TimeSheet from "../components/TimeSheet";
+const fs = require("fs");
 
-const index = () => {
+const index = ({ fs }) => {
   return (
     <div>
-      <TimeSheet />
+      <TimeSheet fs={fs} />
     </div>
-  )
-}
+  );
+};
 
-export default index
+export default index;
+export const getServerSideProps = async () => {
+  fs;
+  return {
+    props: {
+      fs: "fs",
+    },
+  };
+};

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import DropdownButton from "./DropdownButton";
-import sourcedata from "../sourcedata.json";
+import axios from "axios";
 
 const CLIENT_ID =
   "543046022995-l6bsm3dead1il1g2mja6rtu92ap33bm3.apps.googleusercontent.com";
@@ -24,7 +24,7 @@ const monthNames = [
   "December",
 ];
 
-export default function TimeSheet() {
+export default function TimeSheet({ fs }) {
   const [user, setUser] = useState({});
   const [tokenClient, setTokenClient] = useState({});
   const [access, setAccess] = useState("");
@@ -34,17 +34,19 @@ export default function TimeSheet() {
   const [sheetDetails, setSheetDetails] = useState("");
   const [dates, setDates] = useState("");
   const [biodata, setBiodata] = useState([]);
+  const [objectData, setObjectData] = useState("");
 
   const [value, setValue] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [isopen, setIsOpen] = useState(false);
 
-  const fetchDetails = async () => {
-    const response = await fetch("/api/details");
-    const bio = await response.json();
-    setBiodata(bio);
+  const handleOpen = () => {
+    setIsOpen(true);
   };
 
-  console.log(biodata);
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
   function handleCallbackResponse(response) {
     var userObject = jwt_decode(response.credential);
@@ -105,30 +107,72 @@ export default function TimeSheet() {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    let oldSheetData = [...sheetDetails];
-    let newData = {
-      EmpID: e.target.EmpID.value,
-      Name: e.target.Name.value,
-      Designation: e.target.Designation.value,
-      Location: e.target.Location.value,
-      BillingStartDate: e.target.BillingStartDate.value,
-      Contact: e.target.Contact.value,
-      Company: e.target.Company.value,
-      Client: e.target.Client.value,
-    };
-    oldSheetData.push(newData);
-    setSheetDetails(oldSheetData);
-    alert("Details added succesfully");
-    e.target.EmpID.value = "";
-    e.target.Name.value = "";
-    e.target.Designation.value = "";
-    e.target.Location.value = "";
-    e.target.BillingStartDate.value = "";
-    e.target.Contact.value = "";
-    e.target.Company.value = "";
-    e.target.Client.value = "";
+    if (
+      e.target.EmpID.value == "" &&
+      e.target.Name.value == "" &&
+      e.target.Designation.value == "" &&
+      e.target.Location.value == "" &&
+      e.target.BillingStartDate.value == "" &&
+      e.target.Contact.value == "" &&
+      e.target.Company.value == "" &&
+      e.target.Client.value == ""
+    ) {
+      alert("Please add details");
+    } else {
+      let oldSheetData = [...sheetDetails];
+      let newData = {
+        EmpID: e.target.EmpID.value,
+        Name: e.target.Name.value,
+        Designation: e.target.Designation.value,
+        Location: e.target.Location.value,
+        BillingStartDate: e.target.BillingStartDate.value,
+        Contact: e.target.Contact.value,
+        Company: e.target.Company.value,
+        Client: e.target.Client.value,
+      };
+
+      axios
+        .post("/api/details", newData)
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+      oldSheetData.push(newData);
+      // fs.writeFile("../sourcedata.json", JSON.stringify(newData), (err) => {
+      //   if (err) console.log("Error writing file:", err);
+      // });
+      setSheetDetails(oldSheetData);
+      // submitDetail();
+      alert("Details added succesfully");
+      e.target.EmpID.value = "";
+      e.target.Name.value = "";
+      e.target.Designation.value = "";
+      e.target.Location.value = "";
+      e.target.BillingStartDate.value = "";
+      e.target.Contact.value = "";
+      e.target.Company.value = "";
+      e.target.Client.value = "";
+    }
   };
-  console.log("sheet details:", sheetDetails);
+  // console.log("sheet details:", sheetDetails);
+
+  // const fetchDetails = async () => {
+  //   const response = await fetch("/api/details");
+  //   const bio = await response.json();
+  //   setBiodata(bio);
+  // };
+
+  // console.log(biodata);
+
+  // const submitDetail = async () => {
+  //   const response = await fetch("/api/details", {
+  //     method: "POST",
+  //     body: JSON.stringify({objectData}),
+  //     headers: {
+  //       "Content-type": "application/json",
+  //     },
+  //   });
+  //   const bio = await response.json();
+  //   console.log(bio);
+  // };
 
   useEffect(() => {
     const google = window.google;
@@ -142,7 +186,8 @@ export default function TimeSheet() {
       size: "large",
     });
 
-    fetchDetails();
+    // fetchDetails();
+
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentMonthName = monthNames[currentMonth];
@@ -158,7 +203,7 @@ export default function TimeSheet() {
         }-${String(currentDate.getYear()).slice(1)}`;
       }),
     ];
-    console.log(datesInMonth);
+    // console.log(datesInMonth);
     const startDate = datesInMonth.slice(0, 1);
     const endDate = datesInMonth.slice(-1);
 
@@ -1150,10 +1195,15 @@ export default function TimeSheet() {
 
         {Object.keys(user).length != 0 && (
           <div>
-            <button onClick={(e) => handleSignOut(e)}>Sign Out</button>
+            <button
+              className="btn btn-secondary"
+              onClick={(e) => handleSignOut(e)}
+            >
+              Sign Out
+            </button>
             <input
               type="submit"
-              className="m-2"
+              className="m-2 btn btn-secondary"
               onClick={createDriveFile}
               value="Create File"
             />
@@ -1169,46 +1219,126 @@ export default function TimeSheet() {
                 setSheetDetails={setSheetDetails}
               />
             </div>
-            <form onSubmit={(e) => submitHandler(e)} className="form">
-              <label className="form-label"> Enter an EmpID </label>
-              <input
-                name="EmpID"
-                className="form-input"
-                type="number"
-                placeholder="Enter EmpID"
-              />
-              <br />
-              <label> Enter Name </label>
-              <input name="Name" type="text" placeholder="Enter Name" />
-              <br />
-              <label> Enter Designation </label>
-              <input
-                name="Designation"
-                type="text"
-                placeholder="Enter Designation"
-              />
-              <br />
-              <label> Enter Location </label>
-              <input name="Location" type="text" placeholder="Enter Location" />
-              <br />
-              <label> Enter BillingStartDate </label>
-              <input
-                name="BillingStartDate"
-                type="date"
-                placeholder="Enter BillingStartDate"
-              />
-              <br />
-              <label> Enter Contact </label>
-              <input name="Contact" type="number" placeholder="Enter Contact" />
-              <br />
-              <label> Enter Company </label>
-              <input name="Company" type="text" placeholder="Enter Company" />
-              <br />
-              <label> Enter Client </label>
-              <input name="Client" type="text" placeholder="Enter Client" />
-              <br />
-              <button type="submit">Add Details</button>
-            </form>
+            <div>
+              {!isopen && (
+                <button onClick={handleOpen} className="btn btn-primary mt-1">
+                  Open Form
+                </button>
+              )}
+              {isopen && (
+                <form onSubmit={(e) => submitHandler(e)} className="form">
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text">Enter an EmpID:</label>
+                    <input
+                      name="EmpID"
+                      className="form-control"
+                      type="number"
+                      placeholder="Enter EmpID"
+                      required
+                    />
+                  </div>
+
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text"> Enter Name: </label>
+                    <input
+                      className="form-control"
+                      name="Name"
+                      type="text"
+                      placeholder="Enter Name"
+                      required
+                    />
+                  </div>
+
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text">
+                      {" "}
+                      Enter Designation:{" "}
+                    </label>
+                    <input
+                      name="Designation"
+                      className="form-control"
+                      type="text"
+                      placeholder="Enter Designation"
+                      required
+                    />
+                  </div>
+
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text">
+                      {" "}
+                      Enter Location:{" "}
+                    </label>
+                    <input
+                      name="Location"
+                      className="form-control"
+                      type="text"
+                      placeholder="Enter Location"
+                      required
+                    />
+                  </div>
+
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text">
+                      Enter BillingStartDate:
+                    </label>
+                    <input
+                      name="BillingStartDate"
+                      className="form-control"
+                      type="date"
+                      placeholder="Enter BillingStartDate"
+                      required
+                    />
+                  </div>
+
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text"> Enter Contact: </label>
+                    <input
+                      name="Contact"
+                      className="form-control"
+                      type="number"
+                      placeholder="Enter Contact"
+                      minLength="10"
+                      required
+                    />
+                  </div>
+
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text"> Enter Company: </label>
+                    <input
+                      className="form-control"
+                      name="Company"
+                      type="text"
+                      placeholder="Enter Company"
+                      required
+                    />
+                  </div>
+
+                  <div className="input-group input-group-sm mb-3">
+                    <label className="input-group-text"> Enter Client: </label>
+                    <input
+                      className="form-control"
+                      name="Client"
+                      type="text"
+                      placeholder="Enter Client"
+                      value={
+                        value === "Select Project" ? "Select Project" : value
+                      }
+                      required
+                    />
+                  </div>
+
+                  <button className="btn btn-secondary" type="submit">
+                    Add Details
+                  </button>
+                  <button
+                    onClick={handleClose}
+                    className="btn btn-primary mx-1"
+                  >
+                    Close Form
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         )}
 

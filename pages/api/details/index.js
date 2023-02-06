@@ -1,21 +1,17 @@
 import details from "../../../sourcedata.json";
+const fs = require("fs");
 
 export default function handler(req, res) {
-  if (req.method === "GET") {
-    res.status(200).json(details);
-  } else if (req.method === "POST") {
-    const comment = req.body.comment;
-    const newComment = {
-      EmpID: "1561",
-      Name: "Tamilselvan P",
-      Designation: "Senior Software Engineer",
-      Location: "Chennai",
-      BillingStartDate: "23-Sep-2021",
-      Contact: "9876543210",
-      Company: "Msys",
-      Client: "Client Name",
-    };
-    details.push(newComment);
-    res.status(201).json(newComment);
-  }
+  console.log(req.body);
+  const client = req.body.Client;
+
+  details[0][`${client}`].push(req.body);
+  fs.writeFile("./sourcedata.json", JSON.stringify(details, null, 2), (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("file written successfully");
+    }
+  });
+  res.status(200).json(req.body);
 }
