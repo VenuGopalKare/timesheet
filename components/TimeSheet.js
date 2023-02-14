@@ -50,7 +50,7 @@ export default function TimeSheet({ fs }) {
 
   function handleCallbackResponse(response) {
     var userObject = jwt_decode(response.credential);
-    // console.log(userObject)
+
     setUser(userObject);
     document.getElementById("signInDiv").hidden = true;
   }
@@ -136,11 +136,9 @@ export default function TimeSheet({ fs }) {
         .then((res) => console.log(res))
         .catch((err) => console.log(err));
       oldSheetData.push(newData);
-      // fs.writeFile("../sourcedata.json", JSON.stringify(newData), (err) => {
-      //   if (err) console.log("Error writing file:", err);
-      // });
+
       setSheetDetails(oldSheetData);
-      // submitDetail();
+
       alert("Details added succesfully");
       e.target.EmpID.value = "";
       e.target.Name.value = "";
@@ -152,27 +150,6 @@ export default function TimeSheet({ fs }) {
       e.target.Client.value = "";
     }
   };
-  // console.log("sheet details:", sheetDetails);
-
-  // const fetchDetails = async () => {
-  //   const response = await fetch("/api/details");
-  //   const bio = await response.json();
-  //   setBiodata(bio);
-  // };
-
-  // console.log(biodata);
-
-  // const submitDetail = async () => {
-  //   const response = await fetch("/api/details", {
-  //     method: "POST",
-  //     body: JSON.stringify({objectData}),
-  //     headers: {
-  //       "Content-type": "application/json",
-  //     },
-  //   });
-  //   const bio = await response.json();
-  //   console.log(bio);
-  // };
 
   useEffect(() => {
     const google = window.google;
@@ -477,7 +454,6 @@ export default function TimeSheet({ fs }) {
                           values: [[workingDays]],
                         },
                       ],
-                      
                     }),
                   }
                 );
@@ -497,34 +473,34 @@ export default function TimeSheet({ fs }) {
                     body: JSON.stringify({
                       requests: [
                         {
-                          "updateDimensionProperties": {
-                            "range": {
-                              "dimension": "COLUMNS",
-                              "sheetId": `${item.properties.sheetId}`,
-                              "startIndex": 3,
-                              "endIndex": 4
+                          updateDimensionProperties: {
+                            range: {
+                              dimension: "COLUMNS",
+                              sheetId: `${item.properties.sheetId}`,
+                              startIndex: 3,
+                              endIndex: 4,
                             },
-                            "properties": {
-                              "pixelSize": 180
+                            properties: {
+                              pixelSize: 180,
                             },
-                            "fields": "pixelSize"
-                          }
+                            fields: "pixelSize",
+                          },
                         },
                         {
-                          "updateDimensionProperties": {
-                            "range": {
-                              "dimension": "COLUMNS",
-                              "sheetId": `${item.properties.sheetId}`,
-                              "startIndex": 5,
-                              "endIndex": 6
+                          updateDimensionProperties: {
+                            range: {
+                              dimension: "COLUMNS",
+                              sheetId: `${item.properties.sheetId}`,
+                              startIndex: 5,
+                              endIndex: 6,
                             },
-                            "properties": {
-                              "pixelSize": 190
+                            properties: {
+                              pixelSize: 190,
                             },
-                            "fields": "pixelSize"
-                          }
+                            fields: "pixelSize",
+                          },
                         },
-                      
+
                         {
                           mergeCells: {
                             range: {
@@ -630,7 +606,7 @@ export default function TimeSheet({ fs }) {
                               "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)",
                           },
                         },
-                     
+
                         {
                           repeatCell: {
                             range: {
@@ -1076,10 +1052,8 @@ export default function TimeSheet({ fs }) {
                             fields:
                               "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)",
                           },
-                          
-                          
                         },
-                       
+
                         {
                           appendDimension: {
                             sheetId: `${item.properties.sheetId}`,
